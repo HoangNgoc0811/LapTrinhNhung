@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172b3a">
+  <meta name="description" content="Giám sát và điều khiển chuông cửa IoT theo thời gian thực.">
+  <title>IoT Smart Doorbell</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23172b3a'/%3E%3Cpath d='M18 42h28l-4-6V25a10 10 0 0 0-20 0v11z' fill='%23ffb164'/%3E%3Ccircle cx='32' cy='48' r='4' fill='%23ffb164'/%3E%3C/svg%3E">
+</head>
+<body>
+  <!-- Biểu tượng vector có sẵn trong trang, không cần tải ảnh hay font ngoài. -->
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4M12 2V1"/></symbol>
+    <symbol id="shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6zM8 12l3 3 5-6"/></symbol>
+    <symbol id="power" viewBox="0 0 24 24"><path d="M12 2v10M6 5a9 9 0 1 0 12 0"/></symbol>
+    <symbol id="mute" viewBox="0 0 24 24"><path d="m11 5-6 4H2v6h3l6 4zM16 9l6 6M22 9l-6 6"/></symbol>
+    <symbol id="refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6 6a8 8 0 0 1 14 6M18 18A8 8 0 0 1 4 12"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">Đi đến nội dung</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./index.html" aria-label="IoT Smart Doorbell trang chủ">
+        <span class="brand-mark"><svg><use href="#bell"/></svg></span>
+        <span>SMART DOORBELL<small>HỆ THỐNG CHUÔNG CỬA IOT</small></span>
+      </a>
+      <div class="topbar-right">
+        <span id="modeBadge" class="badge">ĐANG KHỞI ĐỘNG</span>
+        <span id="connectionBadge" class="connection" data-kind="waiting" role="status"><i></i><span id="connectionText">Chờ kết nối</span></span>
+      </div>
+    </header>
+    <main id="main">
+      <section class="page-heading">
+        <div><p class="eyebrow">BẢNG ĐIỀU KHIỂN</p><h1>IoT Smart Doorbell<span>.</span></h1><p>Theo dõi khách đến và điều khiển chuông từ xa.</p></div>
+        <div class="clock"><span>GIỜ VIỆT NAM</span><strong id="clock">--:--:--</strong><small id="today">Đang tải ngày</small></div>
+      </section>
+      <div id="notice" class="notice" data-kind="info" role="status" hidden></div>
+      <div id="dataWarning" class="notice" data-kind="warning" role="status" hidden></div>
+      <div class="dashboard">
+        <section id="statusCard" class="card status-card" data-state="unknown" aria-labelledby="statusLabel">
+          <div class="card-top"><p class="eyebrow" id="statusLabel">TRẠNG THÁI CỬA</p><span class="live-label"><i></i><span id="liveLabel">Đang khởi động</span></span></div>
+          <div class="door-visual" aria-hidden="true">
+            <div class="door-halo"></div><div class="door-frame"><div class="door-window"></div><div class="door-handle"></div></div>
+            <span class="door-bell"><svg><use href="#bell"/></svg></span>
+          </div>
+          <div class="status-copy" aria-live="polite"><p class="status-kicker" id="statusKicker">ĐANG CHUẨN BỊ</p><h2 id="ringStatus">CHƯA CÓ DỮ LIỆU</h2><p id="ringDescription">Chờ ứng dụng khởi động.</p></div>
+          <div class="last-ring"><span>Lần bấm chuông gần nhất</span><strong id="lastRingAt">Chưa ghi nhận</strong></div>
+        </section>
+        <section class="card control-card" aria-labelledby="controlTitle">
+          <p class="eyebrow">ĐIỀU KHIỂN TỪ XA</p><h2 id="controlTitle">Quản lý chuông</h2><p class="muted">Tắt âm báo hoặc cho phép chuông hoạt động trở lại.</p>
+          <div class="sound-state"><span class="sound-icon"><svg><use href="#bell"/></svg></span><div><span>Trạng thái chuông</span><strong id="muteStatus">Chưa xác định</strong></div><span id="muteDot" class="state-dot" data-state="unknown"></span></div>
+          <div class="actions">
+            <button id="muteBtn" class="button button-primary" type="button" disabled><svg><use href="#mute"/></svg>TẮT CHUÔNG TỪ XA</button>
+            <button id="unmuteBtn" class="button button-secondary" type="button" disabled><svg><use href="#power"/></svg>BẬT LẠI CHUÔNG</button>
+            <button id="normalBtn" class="button button-text" type="button" disabled><svg><use href="#refresh"/></svg>ĐẶT VỀ BÌNH THƯỜNG</button>
+          </div>
+          <p id="commandState" class="command-state" role="status">Đang khởi động ứng dụng.</p>
+          <div class="control-note"><svg><use href="#shield"/></svg><p id="hardwareNote">Chế độ Demo chỉ mô phỏng trên trình duyệt.</p></div>
+          <p class="small-detail">Yêu cầu tắt gần nhất: <span id="muteRequestedAt">Chưa ghi nhận</span></p>
+        </section>
+        <section class="card test-card" aria-labelledby="testTitle">
+          <div><p class="eyebrow">KHU VỰC KIỂM THỬ</p><h2 id="testTitle">Giả lập thao tác chuông</h2><p id="testDescription" class="muted">Kiểm tra giao diện trước khi ghép phần cứng.</p></div>
+          <div class="test-buttons"><button id="simulateBtn" class="button button-outline" type="button" disabled><svg><use href="#bell"/></svg>Giả lập có khách</button><button id="simulateNormalBtn" class="button button-outline" type="button" disabled>Giả lập bình thường</button></div>
+        </section>
+        <section class="card activity-card" aria-labelledby="activityTitle">
+          <div class="card-top"><div><p class="eyebrow">THEO DÕI TRÊN TRANG</p><h2 id="activityTitle">Hoạt động gần đây</h2></div><span class="badge badge-light">TRONG PHIÊN NÀY</span></div>
+          <ul id="activityList" class="activity-list"><li>Chưa có hoạt động.</li></ul>
+          <p class="muted small-detail">Danh sách chỉ ghi các thay đổi trang này nhận được khi đang mở.</p>
+        </section>
+      </div>
+      <footer><span>Đồ án nhóm IoT · Phạm Hoàng Ngọc phụ trách Web/App</span><span id="modeHint">HTML · CSS · JavaScript · Firebase</span></footer>
+    </main>
+  </div>
+  <noscript><p class="notice">Cần bật JavaScript trong Chrome hoặc Edge để chạy ứng dụng.</p></noscript>
+  <!-- file:// chặn ES module; hiện hướng dẫn ngay cả khi app.js không được tải. -->
+  <script>
+    if (location.protocol === "file:") {
+      const notice = document.getElementById("notice");
+      notice.hidden = false;
+      notice.dataset.kind = "error";
+      notice.textContent = "Bạn đang mở file trực tiếp. Hãy mở thư mục bằng VS Code, nhấp phải index.html và chọn Open with Live Server.";
+    }
+  </script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

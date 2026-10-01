@@ -1,0 +1,20 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "doorbell": {
+      ".read": true,
+      ".write": "newData.hasChildren(['ring', 'mute', 'lastRingAt', 'muteRequestedAt'])",
+      ".validate": "newData.hasChildren(['ring', 'mute', 'lastRingAt', 'muteRequestedAt'])",
+      "ring": { ".validate": "newData.isBoolean()" },
+      "mute": { ".validate": "newData.isBoolean()" },
+      "lastRingAt": {
+        ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 == 0 && newData.val() <= now + 60000"
+      },
+      "muteRequestedAt": {
+        ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 == 0 && newData.val() <= now + 60000"
+      },
+      "$other": { ".validate": false }
+    }
+  }
+}

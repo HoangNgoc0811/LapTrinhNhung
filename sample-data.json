@@ -1,0 +1,8 @@
+{
+  "doorbell": {
+    "ring": false,
+    "mute": false,
+    "lastRingAt": 0,
+    "muteRequestedAt": 0
+  }
+}
